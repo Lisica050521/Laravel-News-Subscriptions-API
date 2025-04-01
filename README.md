@@ -1,66 +1,203 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📬 LARAVEL NEWS SUBSCRIPTIONS API
+**RESTful API для управления подписками на новостные категории (v1 и v2)**
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+---
 
-## About Laravel
+## 📌 О ПРОЕКТЕ
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+API разработано для систем управления подписками на новостные рубрики с возможностью:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- ✉️ **Гибкой подписки** пользователей по email на выбранные категории
+- 🔐 **Безопасного управления** подписками через токены доступа
+- 📊 **Масштабируемой выдачи данных** с пагинацией (limit/offset)
+- 🔄 **Мультиформатного ответа** (JSON/XML)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**Ключевые сценарии использования:**
 
-## Learning Laravel
+1. **Рассылка новостей (IT-компании, медиа-ресурсы)**
+    - Пользователи подписываются на категории (`tech`, `business`, `sports`)
+    - Получают уникальные ссылки для отписки
+    - Администраторы отслеживают статистику через API
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+---
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## ⚙️ ТЕХНИЧЕСКИЕ ХАРАКТЕРИСТИКИ
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Основной функционал
+- ✅ Подписка/отписка на рубрики
+- ✅ Управление через JWT-токены
+- ✅ Поддержка пагинации
+- ✅ Валидация всех входящих параметров
+- ✅ Полное тестовое покрытие (PHPUnit)
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## 🛠 Требования к окружению
+- PHP 8.2+
+- PostgreSQL 13+
+- Composer 2.5+
+- Laravel 10
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+## 🚀 Полная инструкция по установке
 
-## Contributing
+### 1. Установка зависимостей
+```bash
+git clone https://github.com/Lisica050521/Laravel-News-Subscriptions-API.git
+cd Laravel-News-Subscriptions-API
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# Основные зависимости
+composer install
+composer require doctrine/dbal laravel/sanctum spatie/laravel-xml spatie/array-to-xml
 
-## Code of Conduct
+# Проверка драйвера PostgreSQL
+php -m | grep pgsql
+```
+### 2. Настройка базы данных
+```bash
+# Создание основной БД
+psql -U postgres -c "CREATE DATABASE laravel_news;"
+psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE laravel_news TO ваш_пользователь;"
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# Создание тестовой БД
+psql -U postgres -c "CREATE DATABASE laravel_news_api_test;"
+psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE laravel_news_api_test TO ваш_пользователь;"
+```
 
-## Security Vulnerabilities
+### 3. Настройка окружения
+Создайте `.env` файл со следующими параметрами:
+```ini
+APP_NAME=Laravel
+APP_ENV=local
+APP_KEY=ваш сгенерированный код
+APP_DEBUG=true
+APP_URL=http://localhost:8080 (ваш порт)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=laravel_news
+DB_USERNAME=ваш_пользователь
+DB_PASSWORD=ваш_пароль
 
-## License
+SESSION_DRIVER=cookie
+SESSION_DOMAIN=localhost
+SANCTUM_STATEFUL_DOMAINS=localhost:8080
+SESSION_SECURE_COOKIE=false
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 4. Инициализация проекта
+```bash
+# Генерация ключа
+php artisan key:generate
+
+# Миграции и сиды
+php artisan migrate
+php artisan db:seed
+
+# Настройка Sanctum
+php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+php artisan migrate:status | grep personal_access_tokens
+```
+
+### 5. Тестовое окружение
+Создайте `.env.testing`:
+```ini
+APP_NAME=Laravel
+APP_ENV=testing
+APP_KEY=ваш сгенерированный код
+APP_DEBUG=true
+APP_URL=http://localhost:8080 (ваш порт)
+
+APP_ENV=testing
+DB_DATABASE=laravel_news_api_test
+SESSION_DRIVER=array
+CACHE_DRIVER=array
+QUEUE_CONNECTION=sync
+
+SESSION_DRIVER=array
+CACHE_DRIVER=array
+QUEUE_CONNECTION=sync
+
+```
+
+Инициализация тестовой БД:
+```bash
+php artisan migrate:fresh --env=testing
+php artisan db:seed --env=testing
+```
+
+---
+
+## 🔥 Запуск проекта
+
+### Основной режим
+
+```bash
+php artisan serve --port=8080
+```
+
+### Тестирование
+```bash
+php artisan test
+```
+
+---
+
+## 📚 Документация API
+
+### Версия 1 (базовая)
+```http
+POST /api/v1/subscriptions
+Content-Type: application/json
+Authorization: Bearer {token}
+
+{
+  "email": "user@example.com",
+  "category": "technology"
+}
+```
+
+### Версия 2 (с ключами отписки)
+```http
+POST /api/v2/subscriptions
+Content-Type: application/json
+Authorization: Bearer {token}
+
+{
+  "email": "user@example.com",
+  "category": "technology",
+  "name": "Irina Balerina"
+}
+```
+
+---
+
+## 🏗 Структура проекта
+```
+laravel-news-api/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── Api/
+│   │   │   │   ├── V1/
+│   │   │   │   │   └── SubscriptionController.php
+│   │   │   │   ├── V2/
+│   │   │   │   │   └── SubscriptionController.php
+│   │   │   │   ├── AuthController.php
+│   │   │   │   ├── Controller.php
+```
+
+---
+
+## 💡 Важные заметки
+1. Для XML-ответов добавьте заголовок:
+   ```
+   Accept: application/xml
+   ```
+2. Все тесты используют отдельную БД и не влияют на продакшен
+3. Демо-данные включают:
+    - 10 тестовых пользователей
+    - 5 категорий новостей
+    - Примеры подписок

@@ -29,43 +29,57 @@ API разработано для систем управления подпис
 - ✅ Поддержка пагинации
 - ✅ Валидация всех входящих параметров
 - ✅ Полное тестовое покрытие (PHPUnit)
-
+- 🐳 Готовая Docker-конфигурация (опционально)
 ---
 
 ## 🛠 Требования к окружению
-- PHP 8.2+
+
+### Базовые требования
+- PHP 8.2
 - PostgreSQL 13+
 - Composer 2.5+
 - Laravel 10
 
+### Для Docker-развертывания
+- Docker 20.10+
+- Docker Compose 2.4+
+
 ---
+
 
 ## 🚀 Полная инструкция по установке
 
-### 1. Установка зависимостей
+### 1. **Классическая установка** (без Docker)
+
+#### 1. Установка зависимостей
 ```bash
 git clone https://github.com/Lisica050521/Laravel-News-Subscriptions-API.git
 cd Laravel-News-Subscriptions-API
+```
 
-# Основные зависимости
+#### Основные зависимости
+```bash
 composer install
 composer require doctrine/dbal laravel/sanctum spatie/laravel-xml spatie/array-to-xml
-
-# Проверка драйвера PostgreSQL
+```
+#### Проверка драйвера PostgreSQL
+```bash
 php -m | grep pgsql
 ```
-### 2. Настройка базы данных
+#### 2. Настройка базы данных
+
+Создание основной БД
 ```bash
-# Создание основной БД
 psql -U postgres -c "CREATE DATABASE laravel_news;"
 psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE laravel_news TO ваш_пользователь;"
-
-# Создание тестовой БД
+```
+Создание тестовой БД
+```bash
 psql -U postgres -c "CREATE DATABASE laravel_news_api_test;"
 psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE laravel_news_api_test TO ваш_пользователь;"
 ```
 
-### 3. Настройка окружения
+#### 3. Настройка окружения
 Создайте `.env` файл со следующими параметрами:
 ```ini
 APP_NAME=Laravel
@@ -87,21 +101,22 @@ SANCTUM_STATEFUL_DOMAINS=localhost:8080
 SESSION_SECURE_COOKIE=false
 ```
 
-### 4. Инициализация проекта
+#### 4. Инициализация проекта
+Генерация ключа
 ```bash
-# Генерация ключа
 php artisan key:generate
-
-# Миграции и сиды
-php artisan migrate
-php artisan db:seed
-
-# Настройка Sanctum
+```
+Миграции и сиды
+```bash
+php artisan migrate --seed
+```
+#### 6. Настройка Sanctum
+```bash
 php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
 php artisan migrate:status | grep personal_access_tokens
 ```
 
-### 5. Тестовое окружение
+#### 7. Тестовое окружение
 Создайте `.env.testing`:
 ```ini
 APP_NAME=Laravel
@@ -122,27 +137,68 @@ QUEUE_CONNECTION=sync
 
 ```
 
-Инициализация тестовой БД:
+#### Инициализация тестовой БД:
 ```bash
-php artisan migrate:fresh --env=testing
-php artisan db:seed --env=testing
+php artisan migrate:fresh --seed --env=testing
 ```
 
 ---
 
-## 🔥 Запуск проекта
+### 🔥 Запуск проекта
 
-### Основной режим
+#### Основной режим
 
 ```bash
 php artisan serve --port=8080
 ```
 
-### Тестирование
+#### Тестирование
 ```bash
 php artisan test
 ```
+---
 
+## 2. **🐳 Docker-установка**
+
+### Конфигурация окружения
+
+#### Изменения в `.env`:
+```diff
+ DB_HOST=db
+```
+
+#### Изменения в `.env.testing`:
+```diff
+ DB_HOST=db_test
+```
+
+### Docker-команды
+
+
+1. **Сбор и запуск контейнеров**:
+   ```bash
+   docker-compose up -d --build
+   ```
+
+2. **Устанавка зависимостей**:
+   ```bash
+   docker-compose run --rm composer install
+   ```
+
+3. **Миграции и сиды для основной БД**:
+   ```bash
+   docker-compose exec app php artisan migrate --seed
+   ```
+
+4. **Миграции и сиды для основной тестовой БД**:
+   ```bash
+   docker-compose exec app php artisan migrate --seed --env=testing
+   ```
+
+5. **Запуск тестов**:
+   ```bash
+   docker-compose exec app php artisan test
+   ```
 ---
 
 ## 📚 Документация API

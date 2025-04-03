@@ -1,0 +1,67 @@
+services:
+    app:
+        build: .
+        container_name: laravel_news_app
+        restart: unless-stopped
+        working_dir: /var/www
+        volumes:
+            - .:/var/www
+        environment:
+            - APP_ENV=local
+        depends_on:
+            - db
+            - db_test
+        networks:
+            - laravel_network
+
+    webserver:
+        image: nginx:alpine
+        container_name: laravel_news_webserver
+        restart: unless-stopped
+        ports:
+            - "8080:80"
+        volumes:
+            - .:/var/www
+            - ./docker/nginx:/etc/nginx/conf.d
+        depends_on:
+            - app
+        networks:
+            - laravel_network
+
+    db:
+        image: postgres:15
+        container_name: laravel_news_db
+        restart: unless-stopped
+        environment:
+            POSTGRES_DB: laravel_news
+            POSTGRES_USER: irina
+            POSTGRES_PASSWORD: 123
+        ports:
+            - "5432:5432"
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        networks:
+            - laravel_network
+
+    db_test:
+        image: postgres:15
+        container_name: laravel_news_db_test
+        restart: unless-stopped
+        environment:
+            POSTGRES_DB: laravel_news_api_test
+            POSTGRES_USER: irina
+            POSTGRES_PASSWORD: 123
+        ports:
+            - "5433:5432"
+        volumes:
+            - postgres_test_data:/var/lib/postgresql/data
+        networks:
+            - laravel_network
+
+volumes:
+    postgres_data:
+    postgres_test_data:
+
+networks:
+    laravel_network:
+        driver: bridge

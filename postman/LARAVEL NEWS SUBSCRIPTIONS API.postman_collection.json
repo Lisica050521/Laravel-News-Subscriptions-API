@@ -1,0 +1,762 @@
+{
+	"info": {
+		"_postman_id": "0281feb2-cc22-4388-a1aa-fa00b0e785f8",
+		"name": "LARAVEL NEWS SUBSCRIPTIONS API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36352693"
+	},
+	"item": [
+		{
+			"name": "Тестирование версии V1",
+			"item": [
+				{
+					"name": "Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Tests (выполняется ПОСЛЕ запроса)\r",
+									"if (pm.response.code === 200 || pm.response.code === 201) {\r",
+									"    pm.collectionVariables.set(\"last_registered_email\", pm.collectionVariables.get(\"session_email\"));\r",
+									"    pm.collectionVariables.set(\"last_registered_password\", pm.collectionVariables.get(\"test_password\"));\r",
+									"    pm.collectionVariables.set(\"last_registered_name\", pm.collectionVariables.get(\"test_name\"));\r",
+									"    \r",
+									"    console.log(\"Успешная регистрация:\", pm.collectionVariables.get(\"last_registered_email\"));\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{test_name}}\",\r\n    \"email\": \"{{session_email}}\",\r\n    \"password\": \"{{test_password}}\",\r\n    \"password_confirmation\": \"{{test_password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_v1}}auth/register",
+							"host": [
+								"{{base_url_v1}}auth"
+							],
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Проверка успешного ответа\r",
+									"pm.test(\"Status is 200\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Сохранение токена\r",
+									"const response = pm.response.json();\r",
+									"pm.collectionVariables.set(\"auth_token\", response.access_token);\r",
+									"console.log(\"Токен сохранён:\", response.access_token);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"{{last_registered_email}}\",\r\n    \"password\": \"{{last_registered_password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_v1}}auth/login",
+							"host": [
+								"{{base_url_v1}}auth"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_v1}}auth/logout",
+							"host": [
+								"{{base_url_v1}}auth"
+							],
+							"path": [
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscribe/Подписаться",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"{{last_registered_email}}\",\r\n    \"category\": \"sports\",\r\n    \"name\": \"{{last_registered_email}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_v1}}subscriptions",
+							"host": [
+								"{{base_url_v1}}subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unsubscribe / Удалить конкретную подписку",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url_v1}}subscriptions/sports",
+							"host": [
+								"{{base_url_v1}}subscriptions"
+							],
+							"path": [
+								"sports"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UnsubscribeAll/ Удалить все подписки",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_v1}}subscriptions",
+							"host": [
+								"{{base_url_v1}}subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ListSubscriptions/Список подписок пользователя",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_v1}}subscriptions?limit=5&offset=0",
+							"host": [
+								"{{base_url_v1}}subscriptions"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "5"
+								},
+								{
+									"key": "offset",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ListCategorySubscribers/Список подписчиков конкретной рубрики",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url_v1}}subscriptions/category/business",
+							"host": [
+								"{{base_url_v1}}subscriptions"
+							],
+							"path": [
+								"category",
+								"business"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Тестирование версии V2",
+			"item": [
+				{
+					"name": "Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Проверяем, доступен ли pm.collectionVariables\r",
+									"if (pm && pm.collectionVariables) {\r",
+									"    const response = pm.response.json();\r",
+									"    \r",
+									"    // Сохраняем данные в переменные коллекции\r",
+									"    pm.collectionVariables.set(\"last_registered_email\", pm.collectionVariables.get(\"session_email\"));\r",
+									"    pm.collectionVariables.set(\"last_registered_password\", pm.collectionVariables.get(\"test_password\"));\r",
+									"    pm.collectionVariables.set(\"last_registered_name\", pm.collectionVariables.get(\"test_name\"));\r",
+									"    \r",
+									"    console.log(\"Данные сохранены:\", \r",
+									"        pm.collectionVariables.get(\"last_registered_email\"),\r",
+									"        pm.collectionVariables.get(\"last_registered_name\")\r",
+									"    );\r",
+									"} else {\r",
+									"    console.error(\"Ошибка: pm.collectionVariables не доступен!\");\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{test_name}}\",\r\n    \"email\": \"{{session_email}}\",\r\n    \"password\": \"{{test_password}}\",\r\n    \"password_confirmation\": \"{{test_password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_v2}}auth/register",
+							"host": [
+								"{{base_url_v2}}auth"
+							],
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Проверка успешного ответа\r",
+									"pm.test(\"Status is 200\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Сохранение токена\r",
+									"const response = pm.response.json();\r",
+									"pm.collectionVariables.set(\"auth_token\", response.access_token);\r",
+									"console.log(\"Токен сохранён:\", response.access_token);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"{{last_registered_email}}\",\r\n    \"password\": \"{{last_registered_password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_v2}}auth/login",
+							"host": [
+								"{{base_url_v2}}auth"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_v2}}auth/logout",
+							"host": [
+								"{{base_url_v2}}auth"
+							],
+							"path": [
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscribe/Подписаться",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"{{last_registered_email}}\",\r\n    \"category\": \"entertainment\",\r\n    \"name\": \"{{last_registered_email}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_v2}}subscriptions",
+							"host": [
+								"{{base_url_v2}}subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "generateUnsubscribeKey/Получение ключа для отписки",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Generate new unsubscribe key\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    const newKey = pm.response.json().data.unsubscribe_key;\r",
+									"    pm.expect(newKey).to.not.eql(pm.collectionVariables.get(\"unsubscribe_key\"));\r",
+									"    pm.collectionVariables.set(\"unsubscribe_key\", newKey);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url_v2}}subscriptions/unsubscribe-key/entertainment",
+							"host": [
+								"{{base_url_v2}}subscriptions"
+							],
+							"path": [
+								"unsubscribe-key",
+								"entertainment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unsubscribe / Удалить конкретную подписку по ключу",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url_v2}}subscriptions/entertainment/{{unsubscribe_key}}",
+							"host": [
+								"{{base_url_v2}}subscriptions"
+							],
+							"path": [
+								"entertainment",
+								"{{unsubscribe_key}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UnsubscribeAll/ Удалить все подписки",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_v2}}subscriptions",
+							"host": [
+								"{{base_url_v2}}subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ListSubscriptions/Список подписок пользователя",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_v2}}subscriptions?limit=5&offset=0",
+							"host": [
+								"{{base_url_v2}}subscriptions"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "5"
+								},
+								{
+									"key": "offset",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ListCategorySubscribers/Список подписчиков конкретной рубрики",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url_v2}}subscriptions/category/news?limit=5",
+							"host": [
+								"{{base_url_v2}}subscriptions"
+							],
+							"path": [
+								"category",
+								"news"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer"
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					"// Генерируем новые данные КАЖДЫЙ РАЗ при отправке\r",
+					"const randomId = Math.floor(Math.random() * 1000);\r",
+					"const timestamp = Date.now();\r",
+					"\r",
+					"// Обновляем переменные в Collection Variables\r",
+					"pm.collectionVariables.set(\"session_email\", `test_${timestamp}_${randomId}@example.com`);\r",
+					"pm.collectionVariables.set(\"test_name\", `Test User ${randomId}`);\r",
+					"pm.collectionVariables.set(\"test_password\", `password${randomId}`);\r",
+					"\r",
+					"console.log(\"Новые данные:\", \r",
+					"    pm.collectionVariables.get(\"session_email\"), \r",
+					"    pm.collectionVariables.get(\"test_name\")\r",
+					");\r",
+					"\r",
+					"\r",
+					"// Устанавливаем базовые заголовки для всех запросов\r",
+					"pm.request.headers.add({\r",
+					"    key: \"Content-Type\",\r",
+					"    value: \"application/json\"\r",
+					"});\r",
+					"\r",
+					"pm.request.headers.add({\r",
+					"    key: \"Accept\",\r",
+					"    value: \"application/json\"\r",
+					"});\r",
+					"\r",
+					"// Удаляем Content-Type для DELETE-запросов\r",
+					"if (pm.request.method === \"DELETE\") {\r",
+					"    pm.request.headers.remove(\"Content-Type\");\r",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url_v1",
+			"value": "http://127.0.0.1:8080/api/v1/",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "base_url_v2",
+			"value": "http://127.0.0.1:8080/api/v2/",
+			"type": "string"
+		},
+		{
+			"key": "session_email",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "test_name",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "test_password",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "last_registered_email",
+			"value": ""
+		},
+		{
+			"key": "last_registered_password",
+			"value": ""
+		},
+		{
+			"key": "last_registered_name",
+			"value": ""
+		},
+		{
+			"key": "unsubscribe_key",
+			"value": ""
+		}
+	]
+}
